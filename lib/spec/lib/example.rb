@@ -16,9 +16,10 @@ class Example
   end
 
   def eq(expectation)
-    Proc.new { |n| n.eql?(expectation) }
+    proc { |n| n.eql?(expectation) }
   end
 
   private
+
   attr_reader :result
 end

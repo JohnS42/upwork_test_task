@@ -2,10 +2,10 @@
 # represents page https://www.upwork.com/o/profiles/users/_~01c0bd348053c0902d/
 class UpworkFreelancerProfile
   # locators
-  PROFILE_NAME = { xpath: '//*[@id="optimizely-header-container-default"]//*[@itemprop="name"]' }
-  PROFILE_TITLE = { xpath: '//*[contains(@data-ng-bind-html, "vm.cfe.getProfileTitle() | htmlToPlaintext")]' }
-  PROFILE_OVERVIEW = { xpath: '(//*[@id="optimizely-header-container-default"]//*[@itemprop="description"])[1]' }
-  PROFILE_SKILLS = { xpath: '//*[contains(@class, "o-profile-skills")]' }
+  PROFILE_NAME = { xpath: '//*[@id="optimizely-header-container-default"]//*[@itemprop="name"]' }.freeze
+  PROFILE_TITLE = { xpath: '//*[contains(@data-ng-bind-html, "vm.cfe.getProfileTitle() | htmlToPlaintext")]' }.freeze
+  PROFILE_OVERVIEW = { xpath: '(//*[@id="optimizely-header-container-default"]//*[@itemprop="description"])[1]' }.freeze
+  PROFILE_SKILLS = { xpath: '//*[contains(@class, "o-profile-skills")]' }.freeze
 
   attr_reader :profile_data
 
@@ -16,12 +16,12 @@ class UpworkFreelancerProfile
   end
 
   def parse_profile_data
-    MyLogger.log "Parse profile data"
+    MyLogger.log 'Parse profile data'
     @profile_data = {
       name: @instance.text_of(PROFILE_NAME),
       title: @instance.text_of(PROFILE_TITLE),
       overview: @instance.text_of(PROFILE_OVERVIEW).gsub(/\s+/, ' '), # replacing all whitespace characters to match overview
-      skills: @instance.text_of(PROFILE_SKILLS),
+      skills: @instance.text_of(PROFILE_SKILLS)
     }
     MyLogger.log "Parsed profile data: #{@profile_data}"
     @profile_data
@@ -62,8 +62,8 @@ class UpworkFreelancerProfile
       results << { skills: 'failed', fail_message: "Expected <#{@profile_data[:skills]}> to include <#{stored_data[:skills]}>" }
     end
 
-    MyLogger.log "*********************"
-    MyLogger.log "Upwork task step #10 results:"
+    MyLogger.log '*********************'
+    MyLogger.log 'Upwork task step #10 results:'
     print JSON.pretty_unparse results
     print "\n\n"
     results
@@ -74,35 +74,35 @@ class UpworkFreelancerProfile
     results = []
 
     # name
-    if @profile_data[:name].downcase.include?(keyword.downcase)
-      results << { name: 'keyword' }
-    else
-      results << { name: 'no keyword' }
-    end
+    results << if @profile_data[:name].downcase.include?(keyword.downcase)
+                 { name: 'keyword' }
+               else
+                 { name: 'no keyword' }
+               end
 
     # title
-    if @profile_data[:title].downcase.include?(keyword.downcase)
-      results << { title: 'keyword' }
-    else
-      results << { title: 'no keyword' }
-    end
+    results << if @profile_data[:title].downcase.include?(keyword.downcase)
+                 { title: 'keyword' }
+               else
+                 { title: 'no keyword' }
+               end
 
     # overview
-    if @profile_data[:overview].downcase.include?(keyword.downcase)
-      results << { overview: 'keyword' }
-    else
-      results << { overview: 'no keyword' }
-    end
+    results << if @profile_data[:overview].downcase.include?(keyword.downcase)
+                 { overview: 'keyword' }
+               else
+                 { overview: 'no keyword' }
+               end
 
     # skills
-    if @profile_data[:skills].downcase.include?(keyword.downcase)
-      results << { skills: 'keyword' }
-    else
-      results << { skills: 'no keyword' }
-    end
+    results << if @profile_data[:skills].downcase.include?(keyword.downcase)
+                 { skills: 'keyword' }
+               else
+                 { skills: 'no keyword' }
+               end
 
-    MyLogger.log "*********************"
-    MyLogger.log "Upwork task step #11 results:"
+    MyLogger.log '*********************'
+    MyLogger.log 'Upwork task step #11 results:'
     print JSON.pretty_unparse results
     print "\n\n"
     results

@@ -3,7 +3,7 @@
 # https://www.upwork.com/o/profiles/browse/?nbs=1&q=test&profile=~01c0bd348053c0902d
 class UpworkFreelancerProfilePopup
   # locators
-  PROFILE_OPENER = { xpath: '//*[contains(@class, "fullscreen")]/parent::*/a' }
+  PROFILE_OPENER = { xpath: '//*[contains(@class, "fullscreen")]/parent::*/a' }.freeze
 
   def initialize(instance)
     @instance = instance

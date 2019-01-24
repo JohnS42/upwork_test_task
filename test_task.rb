@@ -12,6 +12,7 @@ require_relative 'framework/test_instance'
 # Configurable browser and keyword
 # possible options for browser :firefox, :chrome
 # keyword must be 1 word in order to get valid results
+
 # browser = :chrome
 browser = :firefox
 keyword = 'test'
@@ -45,7 +46,7 @@ upwork_test_suite = context 'Upwork Test Suite' do
       page = page.search_for keyword
     end
 
-    step "Step #6: Parse the 1st page with search results: store info given on the 1st page of search results as structured data of any chosen by you type (i.e. hash of hashes or array of hashes, whatever structure handy to be parsed)." do
+    step 'Step #6: Parse the 1st page with search results: store info given on the 1st page of search results as structured data of any chosen by you type (i.e. hash of hashes or array of hashes, whatever structure handy to be parsed).' do
       page.parse_data
       search_result_freelancers_parsed = page.parsed_freelancers
       indexes_for_random_freelancer = page.freelancer_indexes
@@ -66,7 +67,7 @@ upwork_test_suite = context 'Upwork Test Suite' do
       page = page.go_to_fullscreen_profile
     end
 
-    step "Step #10: Check that each attribute value is equal to one of those stored in the structure created in #67" do
+    step 'Step #10: Check that each attribute value is equal to one of those stored in the structure created in #67' do
       results = page.compare_profile_data_with_stored_data(random_parsed_data)
       # since we are comparing only 4 attributes
       expect(results.find_all { |result| result.invert.keys.first == 'passed' }.size).to eq(4)

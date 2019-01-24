@@ -1,18 +1,17 @@
 # TODO: add screenshot
 # represents https://www.upwork.com/o/profiles/browse/?nbs=1&q=test page
 class UpworkFreelancersSearchResults
-
   # locators
   # since there are also companies in search results
-  FREELANCER_NAME = { xpath: '//h4[contains(@class, "display-inline-block")]/*[@data-qa="tile_name"]' }
-  FREELANCER_TITLE = { xpath: '//h4[@data-qa="tile_title"]' }
-  FREELANCER_OVERVIEW = { xpath: '//*[contains(@class, "d-lg-block")]/p[@data-qa="tile_description"]' }
+  FREELANCER_NAME = { xpath: '//h4[contains(@class, "display-inline-block")]/*[@data-qa="tile_name"]' }.freeze
+  FREELANCER_TITLE = { xpath: '//h4[@data-qa="tile_title"]' }.freeze
+  FREELANCER_OVERVIEW = { xpath: '//*[contains(@class, "d-lg-block")]/p[@data-qa="tile_description"]' }.freeze
 
   # entity all information container
-  ENTITY_DATA = { xpath: '//article[contains(@class, "row")]' }
+  ENTITY_DATA = { xpath: '//article[contains(@class, "row")]' }.freeze
 
   # no results
-  NO_RESULTS = { xpath: '//*[@data-qa="no_results"]' }
+  NO_RESULTS = { xpath: '//*[@data-qa="no_results"]' }.freeze
 
   attr_reader :freelancer_indexes
   attr_reader :agency_freelancer_indexes
@@ -33,6 +32,7 @@ class UpworkFreelancersSearchResults
       # TODO: add agencies parsing
       # for simplification - skipping agencies
       next if @agency_freelancer_indexes.include?(i)
+
       @parsed_freelancers << freelancer_data_by_index(i)
     end
     # TODO: add another options of output to MyLogger
@@ -58,7 +58,7 @@ class UpworkFreelancersSearchResults
       skills_start_index = overview.size + @parsed_rows[index].index(overview) + 1
       raw_skills = @parsed_rows[index][skills_start_index..-1]
     elsif @agency_freelancer_indexes.include? index
-      @instance.webdriver_error "Agency freelancer parsing is not yet implemented"
+      @instance.webdriver_error 'Agency freelancer parsing is not yet implemented'
     else
       @instance.webdriver_error "Something went wrong - search result with ##{index} not found on page"
     end
@@ -71,6 +71,7 @@ class UpworkFreelancersSearchResults
     raw_skills.gsub!(/Portfolios?: \d+/, '')
     # handling case when 0 skills
     return nil if raw_skills.size.zero?
+
     raw_skills.strip
   end
 
@@ -96,7 +97,7 @@ class UpworkFreelancersSearchResults
   end
 
   def no_results?
-    MyLogger.log "Check if nothing found"
+    MyLogger.log 'Check if nothing found'
     result = @instance.displayed?(NO_RESULTS)
     MyLogger.log "Nothing found: #{result}"
     result
@@ -112,8 +113,9 @@ class UpworkFreelancersSearchResults
 
   # since there is different layout for freelancer and agency freelancer search result
   def retrieve_indexes
-    MyLogger.log "Parsing current page search results"
+    MyLogger.log 'Parsing current page search results'
     return if no_results?
+
     @parsed_rows.each_with_index do |row, index|
       if row.downcase.include? 'relevant agency member'
         @agency_freelancer_indexes << index
@@ -134,7 +136,8 @@ class UpworkFreelancersSearchResults
 
   def parse_rows_as_text
     return if no_results?
-    MyLogger.log "Parsing search results from current page"
+
+    MyLogger.log 'Parsing search results from current page'
     elements = @instance.find_all_elements_with ENTITY_DATA
     @parsed_rows = elements.map(&:text)
     @parsed_rows
@@ -142,7 +145,8 @@ class UpworkFreelancersSearchResults
 
   def parse_rows_as_raw_html
     return if no_results?
-    MyLogger.log "Parsing search results as raw html from current page"
+
+    MyLogger.log 'Parsing search results as raw html from current page'
     elements = @instance.find_all_elements_with ENTITY_DATA
     @html_rows = elements.map { |el| el.attribute('innerHTML') }
     @html_rows
@@ -161,23 +165,23 @@ class UpworkFreelancersSearchResults
           attributes_with_keyword << parsed_freelancer.invert[value]
         end
       end
-      unless attributes_with_keyword.empty?
-        freelancers_with_keyword << { freelancer_name: parsed_freelancer[:name], attributes_with_keyword: attributes_with_keyword }
-      else
+      if attributes_with_keyword.empty?
         freelancers_without_keyword << parsed_freelancer
+      else
+        freelancers_with_keyword << { freelancer_name: parsed_freelancer[:name], attributes_with_keyword: attributes_with_keyword }
       end
     end
     if print_results
-      MyLogger.log "**************************************************"
+      MyLogger.log '**************************************************'
       MyLogger.log "Keyword: <#{keyword}> step #7 results"
-      MyLogger.log "Valid results:"
+      MyLogger.log 'Valid results:'
       print JSON.pretty_unparse freelancers_with_keyword
       print "\n\n"
-      MyLogger.log "**************************************************"
-      MyLogger.log "Invalid results:"
+      MyLogger.log '**************************************************'
+      MyLogger.log 'Invalid results:'
       print JSON.pretty_unparse freelancers_without_keyword
       print "\n\n"
-      MyLogger.log "**************************************************"
+      MyLogger.log '**************************************************'
     end
     { freelancers_with_keyword: freelancers_with_keyword, freelancers_without_keyword: freelancers_without_keyword }
   end
@@ -193,7 +197,7 @@ class UpworkFreelancersSearchResults
 
   def wait_to_load
     @instance.wait_until do
-      parse_rows.size > 0 || no_results?
+      !parse_rows.empty? || no_results?
     end
     MyLogger.log "Current page title: #{@instance.title}, url: #{@instance.current_url}"
   end

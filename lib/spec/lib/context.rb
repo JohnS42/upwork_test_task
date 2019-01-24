@@ -29,6 +29,7 @@ class Context
   end
 
   private
+
   attr_accessor :contexts
 end
 

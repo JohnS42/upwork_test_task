@@ -14,7 +14,7 @@ module WebdriverWrapper
       page_address = @driver.current_url
       page_address = "\n\nPage address: #{page_address}" unless page_address.nil?
       err_msg = "#{error_message}#{page_address}"
-      raise RuntimeError, err_msg
+      raise err_msg
     end
 
     def js_loaded?
@@ -27,6 +27,7 @@ module WebdriverWrapper
 
     def jquery_finished?
       return true unless jquery_loaded?
+
       execute_javascript('return window.jQuery.active;').zero?
     end
 
