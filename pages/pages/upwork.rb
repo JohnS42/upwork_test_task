@@ -1,3 +1,5 @@
+# TODO: add screenshot
+# represents page https://www.upwork.com
 class Upwork
   PAGE_URL = 'https://www.upwork.com'
 
@@ -40,7 +42,7 @@ class Upwork
   def search_for(search_term)
     @instance.type_to(SEARCH_BOX, search_term)
     @instance.click_to MAGNIFYING_GLASS
-    UpworkSearchResults.new(@instance)
+    UpworkFreelancersSearchResults.new(@instance)
   end
 
   private

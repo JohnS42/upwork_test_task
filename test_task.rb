@@ -9,6 +9,7 @@ CleanUpHelper.kill_automation_related_entities
 test = nil
 page = nil
 search_result_freelancers_parsed = nil
+indexes_for_random_freelancer = nil
 
 upwork_test_suite = context 'Upwork Test Suite' do
   context 'Upwork Test Case' do
@@ -33,8 +34,14 @@ upwork_test_suite = context 'Upwork Test Suite' do
     end
 
     step "Step #6: Parse the 1st page with search results: store info given on the 1st page of search results as structured data of any chosen by you type (i.e. hash of hashes or array of hashes, whatever structure handy to be parsed)." do
-      search_result_freelancers_parsed = page.freelancer_attributes
+      page.parse_data
+      search_result_freelancers_parsed = page.parsed_freelancers
       indexes_for_random_freelancer = page.freelancer_indexes
+    end
+
+    step "Step #7: Make sure at least one attribute (title, overview, skills, etc) of each item (found freelancer) from parsed search results contains `<keyword>` Log in stdout which freelancers and attributes contain `<keyword>` and which do not." do
+      verification_data = page.freelancers_verification(keyword)
+      expect(verification_data[:freelancers_without_keyword].empty?).to eq(true)
     end
 
     test.webdriver.driver.quit

@@ -1,6 +1,6 @@
 # TODO: add screenshot
 # represents https://www.upwork.com/o/profiles/browse/?nbs=1&q=test page
-class UpworkSearchResults
+class UpworkFreelancersSearchResults
 
   # locators
   # since there are also companies in search results
@@ -17,6 +17,7 @@ class UpworkSearchResults
   attr_reader :freelancer_indexes
   attr_reader :agency_freelancer_indexes
   attr_reader :parsed_rows
+  attr_reader :parsed_freelancers
 
   def initialize(instance)
     @instance = instance
@@ -24,16 +25,15 @@ class UpworkSearchResults
     @freelancer_indexes = []
     @agency_freelancer_indexes = []
     @parsed_rows = []
-    parse_data
+    @parsed_freelancers = []
   end
 
   def freelancer_attributes
-    attributes = []
     (0..(@parsed_rows.size - 1)).each do |i|
       # TODO: add agencies parsing
       # for simplification - skipping agencies
       next if @agency_freelancer_indexes.include?(i)
-      attributes << {
+      @parsed_freelancers << {
         name: parse_row_name(i),
         title: parse_row_title(i),
         overview: parse_row_overview(i),
@@ -42,8 +42,8 @@ class UpworkSearchResults
     end
     # TODO: add another options of output to MyLogger
     # for easier reading adding output without timestamps to STDOUT
-    print JSON.pretty_unparse attributes
-    attributes
+    print JSON.pretty_unparse @parsed_freelancers
+    @parsed_freelancers
   end
 
   def parse_row_skills(index)
@@ -103,6 +103,7 @@ class UpworkSearchResults
   def parse_data
     parse_rows
     retrieve_indexes
+    freelancer_attributes
   end
 
   # since there is different layout for freelancer and agency freelancer search result
@@ -141,6 +142,40 @@ class UpworkSearchResults
     elements = @instance.find_all_elements_with ENTITY_DATA
     @html_rows = elements.map { |el| el.attribute('innerHTML') }
     @html_rows
+  end
+
+  # for test task #7
+  # TODO: move to custom matcher
+  # NOTE: using downcase since case is ignored by upwork search engine
+  def freelancers_verification(keyword, print_results = true)
+    freelancers_with_keyword = []
+    freelancers_without_keyword = []
+    @parsed_freelancers.each do |parsed_freelancer|
+      attributes_with_keyword = []
+      parsed_freelancer.invert.keys.each do |value|
+        if value.downcase.include?(keyword.downcase)
+          attributes_with_keyword << parsed_freelancer.invert[value]
+        end
+      end
+      unless attributes_with_keyword.empty?
+        freelancers_with_keyword << { freelancer_name: parsed_freelancer[:name], attributes_with_keyword: attributes_with_keyword }
+      else
+        freelancers_without_keyword << parsed_freelancer
+      end
+    end
+    if print_results
+      MyLogger.log "**************************************************"
+      MyLogger.log "Keyword: <#{keyword}> step #7 results"
+      MyLogger.log "Valid results:"
+      print JSON.pretty_unparse freelancers_with_keyword
+      print "\n\n"
+      MyLogger.log "**************************************************"
+      MyLogger.log "Invalid results:"
+      print JSON.pretty_unparse freelancers_without_keyword
+      print "\n\n"
+      MyLogger.log "**************************************************"
+    end
+    { freelancers_with_keyword: freelancers_with_keyword, freelancers_without_keyword: freelancers_without_keyword }
   end
 
   private
