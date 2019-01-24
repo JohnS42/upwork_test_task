@@ -1,15 +1,27 @@
 require_relative 'framework/test_instance'
 
-# TODO: add option parser
+# Notes:
+# Assuming user will use keyword matching regex \w+ (no logic for 2+ words as 'keyword')
+# Assuming user have installed firefox and google chrome browser
+#
+# Tested on:
+# OS: Ubuntu 16.04.5 LTS
+# Firefox: firefox 64.0+build3-0ubuntu0.16.04.1
+# Google Chrome: google-chrome-stable 71.0.3578.98-1
+
+# Configurable browser and keyword
+# possible options for browser :firefox, :chrome
+# keyword must be 1 word in order to get valid results
 # browser = :chrome
 browser = :firefox
 keyword = 'test'
 
-CleanUpHelper.kill_automation_related_entities
 test = nil
 page = nil
 search_result_freelancers_parsed = nil
 indexes_for_random_freelancer = nil
+random_parsed_data = nil
+random_title_no = nil
 
 upwork_test_suite = context 'Upwork Test Suite' do
   context 'Upwork Test Case' do
@@ -46,6 +58,7 @@ upwork_test_suite = context 'Upwork Test Suite' do
 
     step "Step #8: Click on random freelancer's title" do
       random_title_no = indexes_for_random_freelancer.sample
+      random_parsed_data = page.freelancer_data_by_index(random_title_no)
       page = page.click_on_freelancer_title random_title_no
     end
 
@@ -53,9 +66,18 @@ upwork_test_suite = context 'Upwork Test Suite' do
       page = page.go_to_fullscreen_profile
     end
 
-    test.webdriver.driver.quit
+    step "Step #10: Check that each attribute value is equal to one of those stored in the structure created in #67" do
+      results = page.compare_profile_data_with_stored_data(random_parsed_data)
+      # since we are comparing only 4 attributes
+      expect(results.find_all { |result| result.invert.keys.first == 'passed' }.size).to eq(4)
+    end
+
+    step "Step #11: Check whether at least one attribute contains `<#{keyword}>`" do
+      results = page.keyword_presence_check(keyword)
+      # since we need only 1 match
+      expect(results.find_all { |result| result.invert.keys.first == 'keyword' }.size >= 1).to eq(true)
+    end
   end
 end
 
 upwork_test_suite.render_results
-CleanUpHelper.kill_automation_related_entities

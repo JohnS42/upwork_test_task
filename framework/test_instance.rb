@@ -1,8 +1,6 @@
 require_relative '../lib/lib'
 require_relative '../pages/pages'
 
-require_relative 'helpers/clean_up_helper'
-
 class TestInstance
   attr_accessor :webdriver
 

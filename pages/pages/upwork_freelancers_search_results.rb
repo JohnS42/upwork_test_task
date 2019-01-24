@@ -33,17 +33,21 @@ class UpworkFreelancersSearchResults
       # TODO: add agencies parsing
       # for simplification - skipping agencies
       next if @agency_freelancer_indexes.include?(i)
-      @parsed_freelancers << {
-        name: parse_row_name(i),
-        title: parse_row_title(i),
-        overview: parse_row_overview(i),
-        skills: parse_row_skills(i)
-      }
+      @parsed_freelancers << freelancer_data_by_index(i)
     end
     # TODO: add another options of output to MyLogger
     # for easier reading adding output without timestamps to STDOUT
     print JSON.pretty_unparse @parsed_freelancers
     @parsed_freelancers
+  end
+
+  def freelancer_data_by_index(index)
+    {
+      name: parse_row_name(index),
+      title: parse_row_title(index),
+      overview: parse_row_overview(index),
+      skills: parse_row_skills(index)
+    }
   end
 
   def parse_row_skills(index)
@@ -179,7 +183,7 @@ class UpworkFreelancersSearchResults
   end
 
   def click_on_freelancer_title(index)
-    MyLogger.log "Click on freelancer ##{index} (title = #{@parsed_freelancers[index][:title]})"
+    MyLogger.log "Click on freelancer ##{index + 1} (name: #{parse_row_name(index)}, title = #{parse_row_title(index)})"
     locator = { FREELANCER_TITLE.keys.first => "(#{FREELANCER_TITLE.invert.keys.first})[#{index + 1}]" }
     @instance.click_to locator
     UpworkFreelancerProfilePopup.new(@instance)
