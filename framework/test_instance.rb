@@ -84,4 +84,10 @@ class TestInstance
     @webdriver.wait_until { @webdriver.driver.find_elements(locator).size > 0 }
     @webdriver.driver.find_elements(locator)
   end
+
+  def select_last_opened_tab
+    MyLogger.log "Select second browser tab"
+    @webdriver.wait_until { @webdriver.tab_number > 1 }
+    @webdriver.switch_to_last_tab
+  end
 end

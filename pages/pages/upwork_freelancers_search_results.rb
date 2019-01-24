@@ -178,6 +178,13 @@ class UpworkFreelancersSearchResults
     { freelancers_with_keyword: freelancers_with_keyword, freelancers_without_keyword: freelancers_without_keyword }
   end
 
+  def click_on_freelancer_title(index)
+    MyLogger.log "Click on freelancer ##{index} (title = #{@parsed_freelancers[index][:title]})"
+    locator = { FREELANCER_TITLE.keys.first => "(#{FREELANCER_TITLE.invert.keys.first})[#{index + 1}]" }
+    @instance.click_to locator
+    UpworkFreelancerProfilePopup.new(@instance)
+  end
+
   private
 
   def wait_to_load

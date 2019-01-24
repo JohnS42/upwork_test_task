@@ -71,5 +71,17 @@ module WebdriverWrapper
       element = @driver.find_element(locator)
       @driver.action.move_to(element).perform
     end
+
+    def tab_number
+      @driver.window_handles.length
+    end
+
+    def switch_to_last_tab
+      @driver.switch_to.window(@driver.window_handles.last)
+    end
+
+    def switch_to_main_tab
+      @driver.switch_to.window(@driver.window_handles.first)
+    end
   end
 end

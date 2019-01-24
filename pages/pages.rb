@@ -1,2 +1,4 @@
 require_relative 'pages/upwork'
 require_relative 'pages/upwork_freelancers_search_results'
+require_relative 'pages/upwork_freelancer_profile_popup'
+require_relative 'pages/upwork_freelancer_profile'

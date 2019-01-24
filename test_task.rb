@@ -44,6 +44,15 @@ upwork_test_suite = context 'Upwork Test Suite' do
       expect(verification_data[:freelancers_without_keyword].empty?).to eq(true)
     end
 
+    step "Step #8: Click on random freelancer's title" do
+      random_title_no = indexes_for_random_freelancer.sample
+      page = page.click_on_freelancer_title random_title_no
+    end
+
+    step "Step #9: Get into that freelancer's profile" do
+      page = page.go_to_fullscreen_profile
+    end
+
     test.webdriver.driver.quit
   end
 end
