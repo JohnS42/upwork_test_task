@@ -51,7 +51,7 @@ upwork_test_suite = context 'Upwork Test Suite' do
       indexes_for_random_freelancer = page.freelancer_indexes
     end
 
-    step "Step #7: Make sure at least one attribute (title, overview, skills, etc) of each item (found freelancer) from parsed search results contains `<keyword>` Log in stdout which freelancers and attributes contain `<keyword>` and which do not." do
+    step "Step #7: Make sure at least one attribute (title, overview, skills, etc) of each item (found freelancer) from parsed search results contains `<#{keyword}>` Log in stdout which freelancers and attributes contain `<#{keyword}>` and which do not." do
       verification_data = page.freelancers_verification(keyword)
       expect(verification_data[:freelancers_without_keyword].empty?).to eq(true)
     end
